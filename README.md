@@ -2,3 +2,9 @@
 Discord bot for the guild Denial of Service (H) on US-Burning Blade.
 
 ## Commands
+
+
+
+
+##### NPM modules
+* npm install discord.js --save
