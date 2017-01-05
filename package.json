@@ -9,6 +9,7 @@
   "author": "awebster",
   "license": "",
   "dependencies": {
+    "blizzard.js": "^1.6.0",
     "discord.js": "^11.0.0",
     "uws": "^0.12.0"
   }

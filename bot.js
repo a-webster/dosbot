@@ -1,30 +1,57 @@
-/*
-  A ping pong bot, whenever you send "ping", it replies "pong".
-*/
-
-// import the discord.js module
+const auth = require("./auth.json");
+const blizzard = require('blizzard.js').initialize({
+    apikey: auth.blizzardAPIKey
+});
 const Discord = require('discord.js');
-
-// create an instance of a Discord Client, and call it bot
 const bot = new Discord.Client();
+const token = auth.botToken;
 
-// the token of your bot - https://discordapp.com/developers/applications/me
-const token = 'MjY2Mjg4MTYyOTcwNjY0OTYx.C07fvg.ENa8aHMdmf-4GttmKly-Um-NywA';
-
-// the ready event is vital, it means that your bot will only start reacting to information
-// from Discord _after_ ready is emitted.
 bot.on('ready', () => {
-  console.log('I am ready!');
+    console.log('DOSBOT ENGAGE');
 });
 
-// create an event listener for messages
+// Event listener for channel messages
 bot.on('message', message => {
-  // if the message is "ping",
-  if (message.content === 'ping') {
-    // send "pong" to the same channel.
-    message.channel.sendMessage('pong');
-  }
+	// TODO: break into separate functions and have this be a clean point of entry to delegate from
+
+    // stupid test command to fiddle with - remove later
+    if (message.content === '!armory aelwyd') {
+        blizzard.wow.character(['profile'], {
+                origin: 'us',
+                realm: 'burning-blade',
+                name: 'aelwyd'
+            })
+            .then(response => {
+                message.channel.sendMessage(JSON.stringify(response.data));
+            });
+
+    }
+
+    // kills the bot to make testing easy because I'm lazy - remove later
+    if (message.content === '!exit') {
+    	console.log('DOSBOT TERMINATE');
+        process.exit();
+    }
+
+    // fetch the current raid roster
+    if (message.content === '!roster') {
+        blizzard.wow.guild(['profile', 'members'], {
+                realm: 'burning-blade',
+                name: 'Denial of Service',
+                origin: 'us'
+            })
+            .then(response => {
+                var roster = [];
+                for (var member of response.data.members) {
+                    if (member.rank < 4) {
+                        roster.push(member.character.name);
+                    }
+                }
+                message.channel.sendMessage(roster);
+            });
+
+    }
 });
 
-// log our bot in
+// log the bot in
 bot.login(token);
